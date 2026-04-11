@@ -191,7 +191,7 @@ public:
     virtual ~branch_module_concept() = default;
 
     virtual void impl_initialize_branch_predictor() = 0;
-    virtual void impl_last_branch_result(champsim::address ip, champsim::address target, bool taken, uint8_t branch_type) = 0;
+    virtual void impl_last_branch_result(champsim::address ip, champsim::address target, champsim::address next_ip, bool taken, uint8_t branch_type) = 0;
     virtual bool impl_predict_branch(champsim::address ip, champsim::address predicted_target, bool always_taken, uint8_t branch_type) = 0;
   };
 
@@ -209,7 +209,7 @@ public:
     explicit branch_module_model(O3_CPU* cpu) : intern_(Bs{cpu}...) { (void)cpu; /* silence -Wunused-but-set-parameter when sizeof...(Bs) == 0 */ }
 
     void impl_initialize_branch_predictor() final;
-    void impl_last_branch_result(champsim::address ip, champsim::address target, bool taken, uint8_t branch_type) final;
+    void impl_last_branch_result(champsim::address ip, champsim::address target, champsim::address next_ip, bool taken, uint8_t branch_type) final;
     [[nodiscard]] bool impl_predict_branch(champsim::address ip, champsim::address predicted_target, bool always_taken, uint8_t branch_type) final;
   };
 
@@ -228,7 +228,7 @@ public:
 
   // NOLINTBEGIN(readability-make-member-function-const): legacy modules use non-const hooks
   void impl_initialize_branch_predictor() const;
-  void impl_last_branch_result(champsim::address ip, champsim::address target, bool taken, uint8_t branch_type) const;
+  void impl_last_branch_result(champsim::address ip, champsim::address target, champsim::address next_ip, bool taken, uint8_t branch_type) const;
   [[nodiscard]] bool impl_predict_branch(champsim::address ip, champsim::address predicted_target, bool always_taken, uint8_t branch_type) const;
 
   void impl_initialize_btb() const;
@@ -267,13 +267,19 @@ void O3_CPU::branch_module_model<Bs...>::impl_initialize_branch_predictor()
 }
 
 template <typename... Bs>
-void O3_CPU::branch_module_model<Bs...>::impl_last_branch_result(champsim::address ip, champsim::address target, bool taken, uint8_t branch_type)
+void O3_CPU::branch_module_model<Bs...>::impl_last_branch_result(champsim::address ip, champsim::address target, champsim::address next_ip, bool taken, uint8_t branch_type)
 {
   [[maybe_unused]] auto process_one = [&](auto& b) {
     using namespace champsim::modules;
-    if constexpr (branch_predictor::has_last_branch_result<decltype(b), uint64_t, uint64_t, bool, uint8_t>)
+    /* 5-arg overloads (with next_ip) — preferred for CBP2025 adapters */
+    if constexpr (branch_predictor::has_last_branch_result<decltype(b), uint64_t, uint64_t, uint64_t, bool, uint8_t>)
+      b.last_branch_result(ip.to<uint64_t>(), target.to<uint64_t>(), next_ip.to<uint64_t>(), taken, branch_type);
+    else if constexpr (branch_predictor::has_last_branch_result<decltype(b), champsim::address, champsim::address, champsim::address, bool, uint8_t>)
+      b.last_branch_result(ip, target, next_ip, taken, branch_type);
+    /* 4-arg overloads (legacy) — fallback for predictors without next_ip */
+    else if constexpr (branch_predictor::has_last_branch_result<decltype(b), uint64_t, uint64_t, bool, uint8_t>)
       b.last_branch_result(ip.to<uint64_t>(), target.to<uint64_t>(), taken, branch_type);
-    if constexpr (branch_predictor::has_last_branch_result<decltype(b), champsim::address, champsim::address, bool, uint8_t>)
+    else if constexpr (branch_predictor::has_last_branch_result<decltype(b), champsim::address, champsim::address, bool, uint8_t>)
       b.last_branch_result(ip, target, taken, branch_type);
   };
 
