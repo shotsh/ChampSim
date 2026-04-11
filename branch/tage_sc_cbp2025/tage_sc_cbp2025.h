@@ -11,7 +11,7 @@ public:
     using branch_predictor::branch_predictor;  // Inherit constructor
 
     bool predict_branch(uint64_t ip, uint64_t predicted_target, bool always_taken, uint8_t branch_type);
-    void last_branch_result(uint64_t ip, uint64_t branch_target, bool taken, uint8_t branch_type);
+    void last_branch_result(uint64_t ip, uint64_t branch_target, uint64_t next_ip, bool taken, uint8_t branch_type);
 };
 
 #endif
