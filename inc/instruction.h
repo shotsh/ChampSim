@@ -107,6 +107,7 @@ struct ooo_model_instr : champsim::program_ordered<ooo_model_instr> {
 
   branch_type branch{NOT_BRANCH};
   champsim::address branch_target{};
+  champsim::address next_ip{};
 
   bool dib_checked = false;
   bool fetch_issued = false;
