@@ -182,7 +182,7 @@ bool O3_CPU::do_predict_branch(ooo_model_instr& arch_instr)
     }
 
     impl_update_btb(arch_instr.ip, arch_instr.branch_target, arch_instr.branch_taken, arch_instr.branch);
-    impl_last_branch_result(arch_instr.ip, arch_instr.branch_target, arch_instr.branch_taken, arch_instr.branch);
+    impl_last_branch_result(arch_instr.ip, arch_instr.branch_target, arch_instr.next_ip, arch_instr.branch_taken, arch_instr.branch);
   }
 
   return stop_fetch;
@@ -732,9 +732,9 @@ long O3_CPU::retire_rob()
 
 void O3_CPU::impl_initialize_branch_predictor() const { branch_module_pimpl->impl_initialize_branch_predictor(); }
 
-void O3_CPU::impl_last_branch_result(champsim::address ip, champsim::address target, bool taken, uint8_t branch_type) const
+void O3_CPU::impl_last_branch_result(champsim::address ip, champsim::address target, champsim::address next_ip, bool taken, uint8_t branch_type) const
 {
-  branch_module_pimpl->impl_last_branch_result(ip, target, taken, branch_type);
+  branch_module_pimpl->impl_last_branch_result(ip, target, next_ip, taken, branch_type);
 }
 
 bool O3_CPU::impl_predict_branch(champsim::address ip, champsim::address predicted_target, bool always_taken, uint8_t branch_type) const
