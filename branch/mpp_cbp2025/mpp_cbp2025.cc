@@ -70,17 +70,18 @@ bool mpp_cbp2025::predict_branch(uint64_t ip, uint64_t /*predicted_target*/, boo
 }
 
 // Keep the history/update order aligned with the combined predictor.
-void mpp_cbp2025::last_branch_result(uint64_t ip, uint64_t branch_target, bool taken, uint8_t branch_type)
+void mpp_cbp2025::last_branch_result(uint64_t ip, uint64_t branch_target, uint64_t next_ip, bool taken, uint8_t branch_type)
 {
   const int brtype = champsim_to_cbp_brtype(branch_type);
+  const uint64_t nextPC = taken ? branch_target : next_ip; // Use next_ip for not-taken branches.
 
   if (branch_type == BRANCH_CONDITIONAL) {
-    cbp2016_tage_sc_l.history_update(0, 0, ip, brtype, pred_taken, taken, branch_target);
-    cond_predictor_impl.history_update(0, 0, ip, taken, branch_target);
-    cbp2016_tage_sc_l.update(0, 0, ip, taken, pred_taken, branch_target);
-    cond_predictor_impl.update(0, 0, ip, taken, pred_taken, branch_target);
+    cbp2016_tage_sc_l.history_update(0, 0, ip, brtype, pred_taken, taken, nextPC);
+    cond_predictor_impl.history_update(0, 0, ip, taken, nextPC);
+    cbp2016_tage_sc_l.update(0, 0, ip, taken, pred_taken, nextPC);
+    cond_predictor_impl.update(0, 0, ip, taken, pred_taken, nextPC);
   } else {
-    cbp2016_tage_sc_l.TrackOtherInst(ip, brtype, pred_taken, taken, branch_target);
-    cond_predictor_impl.nonconditional_history_update(0, 0, ip, taken, branch_target, champsim_to_inst_class(branch_type));
+    cbp2016_tage_sc_l.TrackOtherInst(ip, brtype, pred_taken, taken, nextPC);
+    cond_predictor_impl.nonconditional_history_update(0, 0, ip, taken, nextPC, champsim_to_inst_class(branch_type));
   }
 }
