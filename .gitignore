@@ -30,3 +30,9 @@ compile_commands.json
 
 .vscode/
 **/.DS_Store
+
+# Local-only artifacts
+_worktrees_*/
+libbf/
+*.bak
+*.log
