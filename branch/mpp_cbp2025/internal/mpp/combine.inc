@@ -218,17 +218,19 @@ public:
 			printf ("MPP history size: %g KB\n", history_bits / 8192.0);
 		}
 
-		// add the 64KB of TAGE-SC-L state from provided code
-
-		predictor_size += 65536 * 8; 
+		// Account for the live TAGE-SC-L size before assigning MPP tables.
+		extern int predictorsize();
+		predictor_size += predictorsize();
 		if (!printed) {
 			printf ("TAGE-SC-L size: %g KB\n", (predictor_size - history_bits) / 8192.0);
 		}
 
-		// best configuration of Bloom filters; 3 tables of 2^15 counters
-
-		et = new bloom_filter (3, 1<<15, 47);
-		ent = new bloom_filter (3, 1<<15, 75);
+		// Bloom filter table length; smaller builds can override it at compile time.
+#ifndef MPP_BLOOM_M_LOG
+#define MPP_BLOOM_M_LOG 15
+#endif
+		et = new bloom_filter (3, 1<<MPP_BLOOM_M_LOG, 47);
+		ent = new bloom_filter (3, 1<<MPP_BLOOM_M_LOG, 75);
 		if (!printed) {
 			printf ("Bloom filter size %g KB\n", et->kb() + ent->kb());
 			fflush (stdout);
@@ -310,7 +312,11 @@ public:
 			printf ("number of bits left is %d bits\n", predictor_size);
 			printf ("we can afford ");
 		}
-		int total_bits = 192 * 1024 * 8; // from CBP2025 rules, 192KB
+		// Overall predictor budget in KiB.
+#ifndef MPP_BUDGET_KB
+#define MPP_BUDGET_KB 192
+#endif
+		int total_bits = MPP_BUDGET_KB * 1024 * 8;
 		total_bits -= predictor_size;
 		extern int nentriestotal;
 

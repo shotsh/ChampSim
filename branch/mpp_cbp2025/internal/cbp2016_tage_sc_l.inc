@@ -222,7 +222,11 @@ int SizeTable[NHIST + 1];
 #define MAXHIST 3000
 
 
-#define LOGG 10         /* logsize of the  banks in the  tagged TAGE tables */
+// TAGE tagged-bank log size; build flags may override the default.
+#ifndef MPP_LOGG
+#define MPP_LOGG 10
+#endif
+#define LOGG MPP_LOGG   /* logsize of the  banks in the  tagged TAGE tables */
 #define TBITS 8         //minimum width of the tags  (low history lengths), +4 for high history lengths
 
 
@@ -232,7 +236,11 @@ bool NOSKIP[NHIST + 1];     // to manage the associativity for different history
 
 #define NNN 1           // number of extra entries allocated on a TAGE misprediction (1+NNN)
 #define HYSTSHIFT 2     // bimodal hysteresis shared by 4 entries
-#define LOGB 13         // log of number of entries in bimodal predictor
+// Bimodal log size; build flags may override the default.
+#ifndef MPP_LOGB
+#define MPP_LOGB 13
+#endif
+#define LOGB MPP_LOGB   // log of number of entries in bimodal predictor
 
 #define PHISTWIDTH 27       // width of the path history used in TAGE
 #define UWIDTH 1        // u counter width on TAGE (2 bits not worth the effort for a 512 Kbits predictor 0.2 %)

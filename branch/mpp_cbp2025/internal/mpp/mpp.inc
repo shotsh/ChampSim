@@ -69,7 +69,11 @@ extern int speculatively_update_tables;
 
 #define MAX_PATHHIST	512	// maximum path history
 #define MAX_GHIST	512	// maximum global history
-#define MAX_LG_TABLE_SIZE	13	// log base 2 of maximum weight table size
+// Backing-store cap for MPP weight tables; keep allocator bounds in sync.
+#ifndef MPP_MAX_LG_TABLE_SIZE
+#define MPP_MAX_LG_TABLE_SIZE	13
+#endif
+#define MAX_LG_TABLE_SIZE	MPP_MAX_LG_TABLE_SIZE
 #define MAX_TABLE_SIZE	(1<<MAX_LG_TABLE_SIZE) // maximum table size
 #define MAX_LOCAL_HISTORIES	2048	// maximum number of per-branch histories
 #define MAX_ACYCLIC	20	// maximum number of acyclic histories
@@ -561,10 +565,9 @@ public:
 		long mindiff = 1<<30;
 		int minsizes[MAX_TABLES], actualnentries = 0;
 
-		// try powers of two from 2^6 to 2^20
-
+		// Keep candidate table sizes within the backing-store cap.
 		int lg_table_sizes[MAX_TABLES];
-		for (int i=6; i<20; i++) {
+		for (int i=6; i<MAX_LG_TABLE_SIZE; i++) {
 
 			// we'll divide the tables up into tables of 2^i and 2^{i+1}
 			int ts1 = 1<<i;
