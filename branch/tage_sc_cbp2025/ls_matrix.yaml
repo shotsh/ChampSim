@@ -1,0 +1,20 @@
+# TAGE-SC LOGSCALE sweep matrix (LS1-LS7).
+# Each entry produces one binary with -DLOGSCALE=<N>; derived macros
+# (LOGT, LOGB, LOGBIAS, LOGSCALEB, ...) are computed at compile time
+# from LOGSCALE in my_cond_branch_predictor.inc.
+
+sweep:
+  - name: LS1
+    macros: { LOGSCALE: 1 }
+  - name: LS2
+    macros: { LOGSCALE: 2 }
+  - name: LS3
+    macros: { LOGSCALE: 3 }
+  - name: LS4
+    macros: { LOGSCALE: 4 }
+  - name: LS5
+    macros: { LOGSCALE: 5 }
+  - name: LS6
+    macros: { LOGSCALE: 6 }
+  - name: LS7
+    macros: { LOGSCALE: 7 }
