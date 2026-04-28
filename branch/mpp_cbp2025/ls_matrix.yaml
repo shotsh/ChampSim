@@ -1,0 +1,23 @@
+# MPP budget sweep matrix.
+#
+# Each entry produces one binary via scripts/sweep_build.sh; the macros are
+# fed to CPPFLAGS as -D<KEY>=<VALUE>. LS4 carries the macro values that
+# match the original Jimenez 64 KB CBP2025 reference, so an LS4 build is
+# bit-identical to that reference; the other variants scale the predictor
+# tables and bloom filter around LS4.
+
+sweep:
+  - name: LS1
+    macros: { MPP_BUDGET_KB: 24,   MPP_LOGG: 4,  MPP_LOGB: 4,  MPP_BLOOM_M_LOG: 11, MPP_MAX_LG_TABLE_SIZE: 13 }
+  - name: LS2
+    macros: { MPP_BUDGET_KB: 48,   MPP_LOGG: 7,  MPP_LOGB: 13, MPP_BLOOM_M_LOG: 14, MPP_MAX_LG_TABLE_SIZE: 13 }
+  - name: LS3
+    macros: { MPP_BUDGET_KB: 96,   MPP_LOGG: 9,  MPP_LOGB: 13, MPP_BLOOM_M_LOG: 15, MPP_MAX_LG_TABLE_SIZE: 13 }
+  - name: LS4
+    macros: { MPP_BUDGET_KB: 192,  MPP_LOGG: 10, MPP_LOGB: 13, MPP_BLOOM_M_LOG: 15, MPP_MAX_LG_TABLE_SIZE: 13 }
+  - name: LS5
+    macros: { MPP_BUDGET_KB: 384,  MPP_LOGG: 11, MPP_LOGB: 16, MPP_BLOOM_M_LOG: 15, MPP_MAX_LG_TABLE_SIZE: 14 }
+  - name: LS6
+    macros: { MPP_BUDGET_KB: 768,  MPP_LOGG: 12, MPP_LOGB: 17, MPP_BLOOM_M_LOG: 15, MPP_MAX_LG_TABLE_SIZE: 15 }
+  - name: LS7
+    macros: { MPP_BUDGET_KB: 1536, MPP_LOGG: 13, MPP_LOGB: 18, MPP_BLOOM_M_LOG: 15, MPP_MAX_LG_TABLE_SIZE: 16 }
