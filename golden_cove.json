@@ -34,7 +34,8 @@
   "DIB": {
     "window_size": 32,
     "sets": 128,
-    "ways": 8
+    "ways": 8,
+    "inorder_width": 6
   },
   "L1I": {
     "sets": 64,
