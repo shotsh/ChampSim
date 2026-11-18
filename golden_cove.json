@@ -64,7 +64,7 @@
     "prefetch_as_load": false,
     "virtual_prefetch": true,
     "prefetch_activate": "LOAD,PREFETCH",
-    "prefetcher": "no",
+    "prefetcher": "berti_fixed",
     "hit_latency": 5,
     "fill_latency": 1
   },
@@ -80,7 +80,7 @@
     "prefetch_as_load": false,
     "virtual_prefetch": false,
     "prefetch_activate": "LOAD,PREFETCH",
-    "prefetcher": "spp_dev",
+    "prefetcher": "ampm",
     "hit_latency": 8,
     "fill_latency": 2
   },
